@@ -1,0 +1,2 @@
+class MatchedAlias < ApplicationRecord
+end
