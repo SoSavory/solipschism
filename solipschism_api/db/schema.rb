@@ -16,18 +16,26 @@ ActiveRecord::Schema.define(version: 20171027174034) do
   enable_extension "plpgsql"
 
   create_table "aliases", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.integer  "user_id",        null: false
+    t.date     "effective_date", null: false
+    t.datetime "created_at",     null: false
+    t.datetime "updated_at",     null: false
   end
 
   create_table "articles", force: :cascade do |t|
+    t.integer  "alias_id",   null: false
+    t.string   "title",      null: false
+    t.text     "body",       null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
 
   create_table "matched_aliases", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.integer  "alias_1_id",     null: false
+    t.integer  "alias_2_id",     null: false
+    t.date     "effective_date", null: false
+    t.datetime "created_at",     null: false
+    t.datetime "updated_at",     null: false
   end
 
   create_table "users", force: :cascade do |t|

@@ -2,6 +2,8 @@ class User < ApplicationRecord
   has_secure_password
   has_secure_token
 
+  has_many :aliases
+
   def self.valid_login?(email, password)
     user = find_by(email: email)
     if user && user.authenticate(password)
@@ -18,8 +20,12 @@ class User < ApplicationRecord
     invalidate_token
   end
 
-  def with_unexpired_token(token, period)
+  def self.with_unexpired_token(token, period)
     where(token: token).where('token_created_at >= ?', period).first
+  end
+
+  def current_alias
+    aliases.where(effective_date: Date.today).pluck(:id)[0]
   end
 
   private

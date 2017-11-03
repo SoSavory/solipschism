@@ -16,14 +16,15 @@ class ApiController < ActionController::Base
 
   private
 
-  def authenticate_token
-    authenticate_with_http_token do |token, options|
+    def authenticate_token
+      authenticate_with_http_token do |token, options|
       # Compare tokens wrt time constant, help cut down on timing attakcs
       if user = User.with_unexpired_token(token, 2.days.ago)
-        ActiveSupport::SecurityUtile.secure_compare(
-                        ::Digest::SHA256.hexdigest(token),
-                        ::Digest::SHA256.hexdigest(user.token))
-        user
+          ActiveSupport::SecurityUtils.secure_compare(
+                          ::Digest::SHA256.hexdigest(token),
+                          ::Digest::SHA256.hexdigest(user.token))
+          user
+      end
     end
   end
 end
