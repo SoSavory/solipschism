@@ -11,5 +11,5 @@ class MatchedAlias < ApplicationRecord
     return matches
   end
 
-  
+
 end

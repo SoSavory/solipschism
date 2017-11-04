@@ -1,0 +1,2 @@
+class CoordinateArchive < ApplicationRecord
+end

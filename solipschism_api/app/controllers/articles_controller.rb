@@ -32,15 +32,22 @@ class ArticlesController < ApiController
   end
 
   def show_matched_day
-    user_alias = current_user.current_alias
-    # We want to grab all the articles belonging to all aliases that have a match with the users alias
-    matched_aliases = MatchedAlias.find_matches(user_alias, params[:date].to_date)
-    matched_articles = Article.where(alias_id: matched_aliases).pluck(:id, :title, :body)
-    articles = []
-    matched_articles.each do |ma|
-      articles.push( { id: ma[0], title: ma[1], body: ma[2] } )
+    if params[:date].to_date <= Date.today
+      user_alias = current_user.alias_on_date(params[:date].to_date)
+      # We want to grab all the articles belonging to all aliases that have a match with the users alias
+      matched_aliases = MatchedAlias.find_matches(user_alias, params[:date].to_date)
+      matched_articles = Article.where(alias_id: matched_aliases).pluck(:id, :title, :body)
+      articles = []
+      matched_articles.each do |ma|
+        articles.push( { id: ma[0], title: ma[1], body: ma[2] } )
+      end
+      response = {articles: articles, matched_aliases: matched_aliases}
+      staus = :ok
+    else
+      response = { errors: [ { detail: "You cannot request matched articles from the future" } ] }
+      status = :bad_request
     end
-    render json: {articles: articles, matched_aliases: matched_aliases}, status: :ok
+    render json: response, status: status
   end
 
 

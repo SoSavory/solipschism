@@ -28,6 +28,10 @@ class User < ApplicationRecord
     aliases.where(effective_date: Date.today).pluck(:id)[0]
   end
 
+  def alias_on_date(day)
+    aliases.where(effective_date: day).pluck(:id)[0]
+  end
+
   private
 
   # not available in has_secure_token
