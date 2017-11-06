@@ -1,15 +1,29 @@
 class MatchedAlias < ApplicationRecord
 
-  belongs_to :alias_1, :class_name => "Alias"
-  belongs_to :alias_2, :class_name => "Alias"
+  belongs_to :alias
+  belongs_to :matched_alias, class_name: "Alias"
 
-  def self.find_matches(alias_id, day)
-    matches = self.where(effective_date: day).where(alias_1_id: alias_id).or(MatchedAlias.where(alias_2_id: alias_id)).pluck(:alias_1_id, :alias_2_id)
-    matches.flatten!
-    matches.delete(alias_id)
-    matches.uniq!
-    return matches
+  after_create :create_inverse, unless: :has_inverse?
+  after_destroy :destroy_inverses, if: :has_inverse?
+
+  def create_inverse
+    self.class.create(inverse_match_options)
   end
 
+  def destroy_inverses
+    inverses.destroy_all
+  end
+
+  def has_inverse?
+    self.class.exists?(inverse_match_options)
+  end
+
+  def inverse_match_options
+    self.class.where(inverser_match_options)
+  end
+
+  def inverse_match_options
+    { matched_alias_id: alias_id, alias_id: matched_alias_id, effective_date: Date.today}
+  end
 
 end

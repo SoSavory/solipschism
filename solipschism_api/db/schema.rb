@@ -62,11 +62,12 @@ ActiveRecord::Schema.define(version: 20171103211633) do
   end
 
   create_table "matched_aliases", force: :cascade do |t|
-    t.integer  "alias_1_id",     null: false
-    t.integer  "alias_2_id",     null: false
-    t.date     "effective_date", null: false
-    t.datetime "created_at",     null: false
-    t.datetime "updated_at",     null: false
+    t.integer  "alias_id",         null: false
+    t.integer  "matched_alias_id", null: false
+    t.date     "effective_date",   null: false
+    t.datetime "created_at",       null: false
+    t.datetime "updated_at",       null: false
+    t.index ["alias_id", "matched_alias_id", "effective_date"], name: "alias_matched_alias_date_index", unique: true, using: :btree
   end
 
   create_table "users", force: :cascade do |t|
@@ -80,4 +81,5 @@ ActiveRecord::Schema.define(version: 20171103211633) do
     t.index ["token", "token_created_at"], name: "index_users_on_token_and_token_created_at", using: :btree
   end
 
+  add_foreign_key "matched_aliases", "aliases", column: "matched_alias_id"
 end
