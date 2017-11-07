@@ -30,12 +30,19 @@ namespace :chron_tasks do
     puts "Running Task"
     date = Date.today
     time = Time.now
-    existing_users = User.pluck(:id).map{ |id| "('#{id}', '#{date}', '#{time}', '#{time}')" }.join(",")
+    user_ids = User.pluck(:id)
+    existing_users = user_ids.map{ |id| "('#{id}', '#{date}', '#{time}', '#{time}')" }.join(",")
+    coordinates = user_ids.map{ |id| "('#{id}', '0', '0', '#{time}', '#{time}')" }.join(",")
     puts "Existing users: "
     puts existing_users
 
-    sql = "INSERT INTO aliases (user_id, effective_date, created_at, updated_at) VALUES #{existing_users}"
-    ActiveRecord::Base.connection.execute(sql)
+    puts "Coordinates: "
+    puts coordinates
+
+    sql_aliases = "INSERT INTO aliases (user_id, effective_date, created_at, updated_at) VALUES #{existing_users}"
+    sql_coordinates = "INSERT INTO coordinates (alias_id, latitude, longitude, created_at, updated_at) VALUES #{coordinates}"
+    ActiveRecord::Base.connection.execute(sql_aliases)
+    ActiveRecord::Base.connection.execute(sql_coordinates)
   end
 
 end

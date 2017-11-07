@@ -4,7 +4,7 @@ class ArticlesController < ApiController
 
   def index
     # we want articles whose alias belongs to the current user
-    articles = Article.joins(:alias).where(aliases: {user_id: current_user}).pluck(:id, :title, :body)
+    articles = Article.joins(:alias).where(aliases: {user_id: current_user}).pluck(:id, :title, :body).map{ |a| {id: a[0], title: a[1], body: a[2] } }
     render json: {articles: articles}
   end
 
@@ -35,7 +35,7 @@ class ArticlesController < ApiController
     if params[:date].to_date <= Date.today
       user_alias = current_user.alias_on_date(params[:date].to_date)
       # We want to grab all the articles belonging to all aliases that have a match with the users alias
-      matched_aliases = MatchedAlias.find_matches(user_alias, params[:date].to_date)
+      matched_aliases = MatchedAlias.where(alias_id: user_alias).pluck(:matched_alias_id)
       matched_articles = Article.where(alias_id: matched_aliases).pluck(:id, :title, :body)
       articles = []
       matched_articles.each do |ma|
