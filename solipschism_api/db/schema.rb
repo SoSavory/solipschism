@@ -51,6 +51,7 @@ ActiveRecord::Schema.define(version: 20171103211633) do
     t.integer  "alias_id"
     t.datetime "created_at",                          null: false
     t.datetime "updated_at",                          null: false
+    t.index ["alias_id"], name: "index_coordinates_on_alias_id", unique: true, using: :btree
   end
 
   create_table "matched_alias_archives", force: :cascade do |t|

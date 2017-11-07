@@ -6,5 +6,6 @@ class CreateCoordinates < ActiveRecord::Migration[5.0]
       t.integer :alias_id
       t.timestamps
     end
+    add_index :coordinates, :alias_id, unique: true
   end
 end

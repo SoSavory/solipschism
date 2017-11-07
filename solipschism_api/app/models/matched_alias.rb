@@ -19,7 +19,7 @@ class MatchedAlias < ApplicationRecord
   end
 
   def inverse_match_options
-    self.class.where(inverser_match_options)
+    self.class.where(inverse_match_options)
   end
 
   def inverse_match_options
