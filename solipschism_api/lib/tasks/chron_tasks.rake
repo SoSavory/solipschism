@@ -10,7 +10,7 @@ namespace :chron_tasks do
       puts "Already Matched Aliases" + String(already_matched_aliases)
       alias_coordinates = Coordinate.where(alias_id: alias_id).pluck(:latitude, :longitude)
       puts "Alias Coordinates: " + String(alias_coordinates)
-      compare_aliases = Alias.where(effective_date: Date.today).where('aliases.id > ?', alias_id).includes(:matched_aliases, :coordinates).references(:matched_aliases, :coordinates).where("aliases.id NOT IN (?)", already_matched_aliases).pluck('aliases.id, coordinates.latitude, coordinates.longitude')
+      compare_aliases = Alias.where(effective_date: Date.today).where('aliases.id > ?', alias_id).includes(:matched_aliases, :coordinate).references(:matched_aliases, :coordinate).where("aliases.id NOT IN (?)", already_matched_aliases).pluck('aliases.id, coordinates.latitude, coordinates.longitude')
       puts "Compare Aliases " + String(compare_aliases)
       compare_aliases.each do |cc|
         distance = Coordinate.compare_coordinates(cc[1].to_f, alias_coordinates[0][0].to_f, cc[2].to_f, alias_coordinates[0][1].to_f)
