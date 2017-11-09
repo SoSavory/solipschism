@@ -6,6 +6,8 @@ class Alias < ApplicationRecord
 
   after_create :create_coordinates
 
+  has_many :articles
+
   def create_coordinates
     Coordinate.create(alias_id: self.id, latitude: 0, longitude: 0)
   end
