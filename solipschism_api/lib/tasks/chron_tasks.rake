@@ -2,8 +2,11 @@ namespace :chron_tasks do
   desc "Matches Aliases based on coordinates, to be used every 15ish minutes"
   task match_aliases: :environment do
     puts "Running task"
+    today = Date.today
+    now = Time.now
 
      Alias.joins(:user).where('users.opts_to_compute != TRUE').where(effective_date: Date.today).order("aliases.id").pluck("aliases.id").each do |alias_id|
+
       puts "Alias ID: " + String(alias_id)
       # Exclude aliases where there is already a match, find a way to rewrite this query as a single join
       already_matched_aliases = MatchedAlias.where(alias_id: alias_id).pluck(:matched_alias_id).push(alias_id)
@@ -20,14 +23,24 @@ namespace :chron_tasks do
       #                        .includes(:coordinate, :matched_aliases)
       #                        .references(:coordinate, :matched_aliases)
       #                        .where('')
+
+      matched_aliases = []
+
       compare_aliases.each do |cc|
         distance = Coordinate.compare_coordinates(cc[1].to_f, alias_coordinates[0][0].to_f, cc[2].to_f, alias_coordinates[0][1].to_f)
         puts alias_id
         puts cc[0]
         puts distance
         if distance <= 100
-          MatchedAlias.create(alias_id: alias_id, matched_alias_id: cc[0], effective_date: Date.today)
+          matched_aliases.push(cc[0])
         end
+      end
+      unless matched_aliases.empty?
+        matches = matched_aliases.map{|m| "( #{alias_id}, #{m}, '#{today}', '#{now}', '#{now}' )"}.join(",")
+        sql_matched_aliases = "INSERT INTO matched_aliases (alias_id, matched_alias_id, effective_date, created_at, updated_at) VALUES #{matches}"
+        sql_reverse_matched_aliases = "INSERT INTO matched_aliases (matched_alias_id, alias_id, effective_date, created_at, updated_at) VALUES #{matches}"
+        ActiveRecord::Base.connection.execute(sql_matched_aliases)
+        ActiveRecord::Base.connection.execute(sql_reverse_matched_aliases)
       end
     end
     # Here is where we would archiv the existing coordinates, if that is something we wanted to do

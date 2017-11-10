@@ -49,10 +49,7 @@ class CoordinatesController < ApiController
 
       already_existing_matches = MatchedAlias.where(alias_id: current_alias).where(effective_date: effective_date).pluck(:matched_alias_id)
       matched = params[:matched] -= already_existing_matches
-
-
       matches = matched.map{|m| "( #{current_alias}, #{m}, '#{effective_date}', '#{now}', '#{now}' )"}.join(",")
-
 
       sql_matched_aliases = "INSERT INTO matched_aliases (alias_id, matched_alias_id, effective_date, created_at, updated_at) VALUES #{matches}"
       sql_reverse_matched_aliases = "INSERT INTO matched_aliases (matched_alias_id, alias_id, effective_date, created_at, updated_at) VALUES #{matches}"
