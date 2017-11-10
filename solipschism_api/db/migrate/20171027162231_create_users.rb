@@ -5,6 +5,8 @@ class CreateUsers < ActiveRecord::Migration[5.0]
       t.string :email, null: false
       t.string :token, index: true
       t.string :password_digest, null: false
+
+      t.boolean :opts_to_compute, default: false, index: true
       t.timestamps
     end
   end

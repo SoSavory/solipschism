@@ -17,28 +17,56 @@ class CoordinatesController < ApiController
     render json: {coordinates: coordinates}
   end
 
+
+
   def require_computation_set
-    computation_set = Alias.includes(:coordinate).references(:coordinate).where('aliases.id != ?', current_user.current_alias)
+    if current_user.opts_to_compute == TRUE
+
+      computation_set = Alias.includes(:matched_aliases, :coordinate).references(:matched_aliases, :coordinate)
+                           .where('aliases.id != ?', current_user.current_alias)
                            .pluck('aliases.id, coordinates.latitude, coordinates.longitude')
                            .map{|datum| {alias_id: datum[0], latitude: datum[1].to_f, longitude: datum[2].to_f } }
-    # Generate Computation set key- a key that allows for matched to be uploaded
 
-    render json: {computation_set: computation_set}
+      message = {computation_set: computation_set}
+      status = :ok
+    else
+      message = {errors: [{detail: "You have not opted in to perform computation, you must do so in order to retrieve your data set."}]}
+      status = :bad_request
+    end
+    render json: message, status: status
   end
 
+
+  # Expexts the params[:matched] to be in form [ids where match should be made]
   def upload_matched_aliases
-    current_alias = current_user.current_alias
 
-    # if params[:computation_set_key] == current_user.computation_set_key
-    effective_date = Date.today
-    now = Time.now
+    if current_user.opts_to_compute == TRUE
+      current_alias = current_user.current_alias
 
-    matches = params[:matched].map{|m| "( #{current_alias}, #{m}, '#{effective_date}', '#{now}', '#{now}' )"}.join(",")
+      # if params[:computation_set_key] == current_user.computation_set_key
+      effective_date = Date.today
+      now = Time.now
 
-    sql_matched_aliases = "INSERT INTO matched_aliases (alias_id, matched_alias_id, effective_date, created_at, updated_at) VALUES #{existing_users}"
-    ActiveRecord::Base.connection.execute(sql_matched_aliases)
+      already_existing_matches = MatchedAlias.where(alias_id: current_alias).where(effective_date: effective_date).pluck(:matched_alias_id)
+      matched = params[:matched] -= already_existing_matches
 
-    render json: {message: "Thank you for uploading your matches!"}
+
+      matches = matched.map{|m| "( #{current_alias}, #{m}, '#{effective_date}', '#{now}', '#{now}' )"}.join(",")
+
+
+      sql_matched_aliases = "INSERT INTO matched_aliases (alias_id, matched_alias_id, effective_date, created_at, updated_at) VALUES #{matches}"
+      sql_reverse_matched_aliases = "INSERT INTO matched_aliases (matched_alias_id, alias_id, effective_date, created_at, updated_at) VALUES #{matches}"
+      ActiveRecord::Base.connection.execute(sql_matched_aliases)
+      ActiveRecord::Base.connection.execute(sql_reverse_matched_aliases)
+      message = {message: "Thank You for uploading your matches!"}
+      status = :ok
+
+    else
+      message = {errors: [{detail: "You have not opted in to perform computation, you must do so in order to submit matched data sets."}]}
+      status = :bad_request
+    end
+
+    render json: message, status: status
 
   end
 

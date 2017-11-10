@@ -72,13 +72,15 @@ ActiveRecord::Schema.define(version: 20171103211633) do
   end
 
   create_table "users", force: :cascade do |t|
-    t.string   "name",             null: false
-    t.string   "email",            null: false
+    t.string   "name",                             null: false
+    t.string   "email",                            null: false
     t.string   "token"
-    t.string   "password_digest",  null: false
-    t.datetime "created_at",       null: false
-    t.datetime "updated_at",       null: false
+    t.string   "password_digest",                  null: false
+    t.boolean  "opts_to_compute",  default: false
+    t.datetime "created_at",                       null: false
+    t.datetime "updated_at",                       null: false
     t.datetime "token_created_at"
+    t.index ["opts_to_compute"], name: "index_users_on_opts_to_compute", using: :btree
     t.index ["token", "token_created_at"], name: "index_users_on_token_and_token_created_at", using: :btree
   end
 

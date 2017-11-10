@@ -3,7 +3,7 @@ namespace :chron_tasks do
   task match_aliases: :environment do
     puts "Running task"
 
-     Alias.where(effective_date: Date.today).order(:id).pluck(:id).each do |alias_id|
+     Alias.joins(:user).where('users.opts_to_compute != TRUE').where(effective_date: Date.today).order("aliases.id").pluck("aliases.id").each do |alias_id|
       puts "Alias ID: " + String(alias_id)
       # Exclude aliases where there is already a match, find a way to rewrite this query as a single join
       already_matched_aliases = MatchedAlias.where(alias_id: alias_id).pluck(:matched_alias_id).push(alias_id)
