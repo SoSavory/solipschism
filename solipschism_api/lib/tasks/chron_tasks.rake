@@ -1,9 +1,11 @@
 namespace :chron_tasks do
   desc "Matches Aliases based on coordinates, to be used every 15ish minutes"
+  # Currently the cost of this is 3N + 1 Queries + 2 Mass Inserts + (N^2 - N)/2 Trig comparisons
   task match_aliases: :environment do
     puts "Running task"
     today = Date.today
     now = Time.now
+    overall_matches_array = []
 
      Alias.joins(:user).where('users.opts_to_compute != TRUE').where(effective_date: Date.today).order("aliases.id").pluck("aliases.id").each do |alias_id|
 
@@ -37,13 +39,19 @@ namespace :chron_tasks do
       end
       unless matched_aliases.empty?
         matches = matched_aliases.map{|m| "( #{alias_id}, #{m}, '#{today}', '#{now}', '#{now}' )"}.join(",")
-        sql_matched_aliases = "INSERT INTO matched_aliases (alias_id, matched_alias_id, effective_date, created_at, updated_at) VALUES #{matches}"
-        sql_reverse_matched_aliases = "INSERT INTO matched_aliases (matched_alias_id, alias_id, effective_date, created_at, updated_at) VALUES #{matches}"
-        ActiveRecord::Base.connection.execute(sql_matched_aliases)
-        ActiveRecord::Base.connection.execute(sql_reverse_matched_aliases)
+        puts "Matches: "
+        puts matches
+        overall_matches_array.push(matches)
       end
     end
     # Here is where we would archiv the existing coordinates, if that is something we wanted to do
+    overall_matches = overall_matches_array.join(",")
+    puts "Overall Matches: "
+    puts overall_matches
+    sql_matched_aliases = "INSERT INTO matched_aliases (alias_id, matched_alias_id, effective_date, created_at, updated_at) VALUES #{overall_matches}"
+    sql_reverse_matched_aliases = "INSERT INTO matched_aliases (matched_alias_id, alias_id, effective_date, created_at, updated_at) VALUES #{overall_matches}"
+    ActiveRecord::Base.connection.execute(sql_matched_aliases)
+    ActiveRecord::Base.connection.execute(sql_reverse_matched_aliases)
   end
 
   desc "Creates a fresh set of aliases and coordinates for users, to be used daily"
