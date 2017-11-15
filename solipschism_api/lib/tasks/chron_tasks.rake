@@ -21,10 +21,6 @@ namespace :chron_tasks do
                              .where("aliases.id NOT IN (?)", already_matched_aliases)
                              .pluck('aliases.id, coordinates.latitude, coordinates.longitude')
       puts "Compare Aliases " + String(compare_aliases)
-      # compare_aliases = Alias.where(effective_date: Date.today).where('aliases.id > ?', alias_id)
-      #                        .includes(:coordinate, :matched_aliases)
-      #                        .references(:coordinate, :matched_aliases)
-      #                        .where('')
 
       matched_aliases = []
 
