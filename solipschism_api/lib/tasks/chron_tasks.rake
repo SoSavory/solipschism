@@ -57,16 +57,13 @@ namespace :chron_tasks do
     time = Time.now
     user_ids = User.pluck(:id)
     existing_users = user_ids.map{ |id| "('#{id}', '#{date}', '#{time}', '#{time}')" }.join(",")
-    coordinates = user_ids.map{ |id| "('#{id}', '0', '0', '#{time}', '#{time}')" }.join(",")
-    puts "Existing users: "
-    puts existing_users
-
-    puts "Coordinates: "
-    puts coordinates
 
     sql_aliases = "INSERT INTO aliases (user_id, effective_date, created_at, updated_at) VALUES #{existing_users}"
-    sql_coordinates = "INSERT INTO coordinates (alias_id, latitude, longitude, created_at, updated_at) VALUES #{coordinates}"
     ActiveRecord::Base.connection.execute(sql_aliases)
+
+    existing_aliases = Alias.where(effective_date: date).pluck(:id)
+    coordinates = existing_aliases.map{ |id| "('#{id}', '0', '0', '#{time}', '#{time}')" }.join(",")
+    sql_coordinates = "INSERT INTO coordinates (alias_id, latitude, longitude, created_at, updated_at) VALUES #{coordinates}"
     ActiveRecord::Base.connection.execute(sql_coordinates)
   end
 

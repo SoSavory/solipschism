@@ -4,7 +4,7 @@ class ArticlesController < ApiController
 
   def index
     # we want articles whose alias belongs to the current user
-    articles = Article.joins(:alias).where(aliases: {user_id: current_user}).pluck(:id, :title, :body).map{ |a| {id: a[0], title: a[1], body: a[2] } }
+    articles = Article.joins(:alias).where(aliases: {user_id: current_user}).order("articles.created_at DESC").pluck(:id, :title, :body).map{ |a| {id: a[0], title: a[1], body: a[2] } }
     render json: {articles: articles}
   end
 
