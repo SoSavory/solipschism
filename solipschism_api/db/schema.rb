@@ -80,6 +80,7 @@ ActiveRecord::Schema.define(version: 20171103211633) do
     t.datetime "created_at",                       null: false
     t.datetime "updated_at",                       null: false
     t.datetime "token_created_at"
+    t.index ["email"], name: "index_users_on_email", unique: true, using: :btree
     t.index ["opts_to_compute"], name: "index_users_on_opts_to_compute", using: :btree
     t.index ["token", "token_created_at"], name: "index_users_on_token_and_token_created_at", using: :btree
   end

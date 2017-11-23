@@ -4,6 +4,8 @@ class User < ApplicationRecord
 
   has_many :aliases
 
+  validates :email, presence: true, uniqueness: true
+
   def self.valid_login?(email, password)
     user = find_by(email: email)
     if user && user.authenticate(password)

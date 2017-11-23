@@ -14,21 +14,18 @@
 # Configure Using Gemfile
 # gem 'pg'
 #
-<% user = ENV.key?("POSTGRESQL_ADMIN_PASSWORD") ? "root" : ENV["POSTGRESQL_USER"] %>
-<% password = ENV.key?("POSTGRESQL_ADMIN_PASSWORD") ? ENV["POSTGRESQL_ADMIN_PASSWORD"] : ENV["POSTGRESQL_PASSWORD"] %>
-<% db_service = ENV.fetch("DATABASE_SERVICE_NAME", "").upcase %>
 
 default: &default
   adapter: postgresql
   encoding: unicode
   # For details on connection pooling, see rails configuration guide
   # http://guides.rubyonrails.org/configuring.html#database-pooling
-  pool: <%= ENV["POSTGRESQL_MAX_CONNECTIONS"] || 5 %>
-  username: <%= user %>
-  password: <%= password %>
-  host: <%= ENV["#{db_service}_SERVICE_HOST"] %>
-  port: <%= ENV["#{db_service}_SERVICE_PORT"] %>
-  database: <%= ENV["POSTGRESQL_DATABASE"] %>
+  pool: 100
+  username: rails
+  password: rails
+  host: localhost
+  port: 5432
+  database: solipschism_api_production
 
 development:
   <<: *default
@@ -90,5 +87,5 @@ test:
 production:
   <<: *default
   database: solipschism_api_production
-  username: solipschism_api
-  password: <%= ENV['SOLIPSCHISM_API_DATABASE_PASSWORD'] %>
+  username: rails
+  password: rails

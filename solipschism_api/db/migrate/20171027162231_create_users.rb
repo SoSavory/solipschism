@@ -9,5 +9,6 @@ class CreateUsers < ActiveRecord::Migration[5.0]
       t.boolean :opts_to_compute, default: false, index: true
       t.timestamps
     end
+    add_index :users, :email, unique: true
   end
 end
