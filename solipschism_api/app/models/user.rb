@@ -36,8 +36,7 @@ class User < ApplicationRecord
   end
 
   def create_alias
-    alias_a = Alias.new(user_id: self.id, effective_date: Date.today)
-    alias_a.save!
+    Alias.create(user_id: self.id, effective_date: Date.today)
   end
 
   private
