@@ -27,6 +27,8 @@ default: &default
   port: 5432
   database: solipschism_api_production
 
+
+
 development:
   <<: *default
   database: solipschism_api_development

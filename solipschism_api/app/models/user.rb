@@ -5,6 +5,7 @@ class User < ApplicationRecord
   has_many :aliases
 
   validates :email, presence: true, uniqueness: true
+  after_create :create_alias
 
   def self.valid_login?(email, password)
     user = find_by(email: email)
@@ -32,6 +33,10 @@ class User < ApplicationRecord
 
   def alias_on_date(day)
     aliases.where(effective_date: day).pluck(:id)[0]
+  end
+
+  def create_alias
+    Alias.create(user_id: self.id, effective_date: Date.today)
   end
 
   private
