@@ -1,6 +1,6 @@
 class CoordinatesController < ApiController
   def update
-    coordinate = Coordinate.find_by(alias_id: current_user.current_alias)
+    coordinate = Coordinate.find_or_create(alias_id: current_user.current_alias)
     if coordinate.update_attributes(latitude: params[:latitude], longitude: params[:longitude])
       message = { message: "Successfully Updated Your Coordinates" }
       status = :ok

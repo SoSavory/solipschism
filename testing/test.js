@@ -6,7 +6,7 @@ function getUnauthedApi(endpoint, callback){
   $.ajax(
     {
       type: 'GET',
-      url: "http://localhost:3000/" + String(endpoint),
+      url: "http://165.227.107.115/" + String(endpoint),
       contentType: 'application/json',
       success: function( response ){
         if (callback == null){
@@ -25,7 +25,7 @@ function getApi(endpoint, api_key, callback){
   $.ajax(
     {
       type: 'GET',
-      url: "http://localhost:3000/" + String(endpoint),
+      url: "http://165.227.107.115/" + String(endpoint),
       contentType: 'application/json',
       headers: {"Authorization":" Token token="+api_key},
       success: function( response ){
@@ -46,7 +46,7 @@ function postApi(endpoint, data, api_key, callback){
   $.ajax(
     {
       type: 'POST',
-      url: "http://localhost:3000/" + String(endpoint),
+      url: "http://165.227.107.115/" + String(endpoint),
       contentType: 'application/json',
       dataType: 'json',
       headers: {"Authorization":" Token token="+api_key},
@@ -72,7 +72,7 @@ function deleteApi(endpoint, api_key, callback){
   $.ajax(
     {
       type: 'DELETE',
-      url: "http://localhost:3000/" + String(endpoint),
+      url: "http://165.227.107.115/" + String(endpoint),
       contentType: 'application/json',
       dataType: 'json',
       headers: {"Authorization": " Token token="+api_key},
@@ -97,7 +97,7 @@ function updateApi(endpoint, data, api_key, callback){
   $.ajax(
     {
       type: 'PATCH',
-      url: "http://localhost:3000/" + String(endpoint),
+      url: "http://165.227.107.115/" + String(endpoint),
       contentType: 'application/json',
       dataType: 'json',
       headers: {"Authorization":" Token token="+api_key},
