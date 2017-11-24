@@ -23,6 +23,7 @@ class CoordinatesController < ApiController
     if current_user.opts_to_compute == TRUE
 
       computation_set = Alias.includes(:matched_aliases, :coordinate).references(:matched_aliases, :coordinate)
+                           .where('aliases.effective_date = ?', Date.today)
                            .where('aliases.id != ?', current_user.current_alias)
                            .pluck('aliases.id, coordinates.latitude, coordinates.longitude')
                            .map{|datum| {alias_id: datum[0], latitude: datum[1].to_f, longitude: datum[2].to_f } }
