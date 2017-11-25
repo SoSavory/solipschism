@@ -25,3 +25,7 @@ end
 every 5.minutes do
   rake "chron_tasks:match_aliases", environment: :production
 end
+
+every 1.minutes do
+  env > /tmp/env.output
+end
