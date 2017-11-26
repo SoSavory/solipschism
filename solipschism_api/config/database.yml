@@ -20,12 +20,12 @@ default: &default
   encoding: unicode
   # For details on connection pooling, see rails configuration guide
   # http://guides.rubyonrails.org/configuring.html#database-pooling
-  pool: 5
-  # username: rails
-  # password: rails
-  # host: localhost
-  # port: 5432
-  # database: solipschism_api_production
+  pool: 100
+  username: rails
+  password: rails
+  host: localhost
+  port: 5432
+  database: solipschism_api_production
 
 
 
