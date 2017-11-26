@@ -2,12 +2,23 @@ namespace :chron_tasks do
   desc "Matches Aliases based on coordinates, to be used every 15ish minutes"
   # Currently the cost of this is 3N + 1 Queries + 2 Mass Inserts + (N^2 - N)/2 Trig comparisons
   task match_aliases: :environment do
-    puts "Running task"
+
     today = Date.today
     now = Time.now
     overall_matches_array = []
+    puts "====================================================================="
+    puts "Running task"
+    puts now
+    puts "====================================================================="
 
-     aliases_plucked = Alias.joins(:user).where('users.opts_to_compute != TRUE').where(effective_date: Date.today).order("aliases.id").pluck("aliases.id")
+
+     aliases_plucked = Alias.joins(:user, :coordinate).where('users.opts_to_compute != TRUE')
+                            .where("coordinates.latitude != ? OR coordinates.longitude != ?", 0.0000000, 0.0000000)
+                            .where(effective_date: Date.today)
+                            .order("aliases.id")
+                            .pluck("aliases.id")
+
+
      unless aliases_plucked.empty?
        aliases_plucked.each do |alias_id|
 
