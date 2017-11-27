@@ -5,8 +5,13 @@ class SolipschismApp extends HTMLElement {
 
     shadowRoot.innerHTML = `
     <style>
+      #container{
+        width: 100%;
+        height: 100%;
+      }
 
     </style>
+
     <div id="container">
     </div>
     `
@@ -55,10 +60,8 @@ class SolipschismApp extends HTMLElement {
     var this_solipschism_app = this;
     var shadow = this.shadowRoot;
 
-    var this_affected_area = $(shadow.querySelector("#container")).html(`
-      <H1>You need to login or signup</h1>
-      `)
-
+    var login_signup = new LoginSignup();
+    var this_affected_area = $(shadow.querySelector("#container")).html(login_signup);
   }
 
   createHomepage(){
@@ -68,6 +71,10 @@ class SolipschismApp extends HTMLElement {
     var this_affected_area = $(shadow.querySelector("#container")).html(`
       <H1>You dont need to login or signup</h1>
       `)
+  }
+
+  login(){
+    
   }
 
 
