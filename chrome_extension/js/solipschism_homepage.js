@@ -212,17 +212,21 @@ class SolipschismHomepage extends HTMLElement {
       var today = $.datepicker.formatDate('yy-mm-dd', new Date());
 
       getData('articles/show_matched_day/'+today, function(data){
-        for(let article of data.articles){
-          var list_element = document.createElement('li');
-          list_element.className = 'list-item';
-          list_element.innerHTML = article.title;
+        if(data.articles.length === 0){
+          $(list_of_matched_journals).append('<p>You haven\'t gotten any matches!</p><p> Go Outside!</p><p> It\'s Good For You!</p>')
+        } else {
+          for(let article of data.articles){
+            var list_element = document.createElement('li');
+            list_element.className = 'list-item';
+            list_element.innerHTML = article.title;
 
-          list_element.addEventListener("click", function(){
-            $(active_matched_journal).html(`
-              <div class="article">
-                <div class="article-title">` + article.title+ `</div><div class="article-body">` + article.body + `</div></div>`);
-          });
-          $(list_of_matched_journals).prepend(list_element);
+            list_element.addEventListener("click", function(){
+              $(active_matched_journal).html(`
+                <div class="article">
+                  <div class="article-title">` + article.title+ `</div><div class="article-body">` + article.body + `</div></div>`);
+            });
+            $(list_of_matched_journals).prepend(list_element);
+          }
         }
       });
     });
@@ -240,19 +244,22 @@ class SolipschismHomepage extends HTMLElement {
       $(old_journals_container).append(active_article);
 
       getData('articles/index', function(data){
-        console.log(list_of_old_journals);
-        for(let article of data.articles){
-          var list_element = document.createElement('li');
-          list_element.className = 'list-item';
-          list_element.innerHTML = article.title;
+        if (data.articles.length === 0){
+          $(list_of_old_journals).append('<p>You haven\'t written anything!</p><p> Write Something!</p><p> It\'s Good For You!</p>')
+        } else {
+          for(let article of data.articles){
+            var list_element = document.createElement('li');
+            list_element.className = 'list-item';
+            list_element.innerHTML = article.title;
 
-          list_element.addEventListener("click", function(){
+            list_element.addEventListener("click", function(){
 
-            $(active_article).html(`
-              <div class="article">
-                <div class="article-title">` + article.title+ `</div><div class="article-body">` + article.body + `</div></div>`);
-          });
-          $(list_of_old_journals).append(list_element);
+              $(active_article).html(`
+                <div class="article">
+                  <div class="article-title">` + article.title+ `</div><div class="article-body">` + article.body + `</div></div>`);
+            });
+            $(list_of_old_journals).append(list_element);
+          }
         }
       });
     });
