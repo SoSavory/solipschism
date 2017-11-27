@@ -198,11 +198,11 @@ function updateData(endpoint, data, callback){
 // Methods for setting/removing sync storage
 //======================================================================================
 
-function setStorage(key, value) {
+function setStorage(key, value, callback) {
   $json_data = {};
   $json_data[key] = value;
   chrome.storage.sync.set($json_data, function(){
-    console.log('Saved a value', key, value);
+    callback();
   });
 }
 
