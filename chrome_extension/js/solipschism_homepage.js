@@ -46,6 +46,7 @@ class SolipschismHomepage extends HTMLElement {
           display: flex;
           flex-direction: column;
           margin: 0 auto 0 auto;
+          align-content: stretch;
         }
 
         textarea, input{
@@ -71,6 +72,7 @@ class SolipschismHomepage extends HTMLElement {
           width: 40%;
           overflow: auto;
           flex-grow: 1;
+
         }
 
         #active-article{
@@ -78,7 +80,7 @@ class SolipschismHomepage extends HTMLElement {
           width: 40%;
           flex-grow: 1;
           overflow: auto;
-
+          margin-left: 1em;
         }
 
 
