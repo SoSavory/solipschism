@@ -4,27 +4,35 @@ class LoginSignup extends HTMLElement {
     var shadowRoot = this.attachShadow({mode: "open"});
     shadowRoot.innerHTML = `
       <style>
+        h1{
+          margin-left: 16px;
+        }
         #container{
           display: flex;
           width: 100%;
           height: 100%;
           flex-direction: row;
           justify-content: space-between;
+          background-color: #f1f1f1;
         }
         .form-container{
           display:flex;
           flex-direction: column;
-          flex-grow: 1;
+          width: 40%;
+          background-color: #F1CBC0;
         }
         form{
           display: flex;
           flex-direction: column;
+          margin-left: 16px;
         }
         input{
           width: 70%;
+          height: 2em;
           padding: 0.25em;
           border: none;
           margin-bottom: 0.25em;
+          box-sizing: content-box;
         }
         input:focus{
           outline: none;
