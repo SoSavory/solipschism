@@ -6,7 +6,7 @@ html, body{
 }
 
 #app-container{
-  position: relative;
+  /*position: relative;*/
   height: 100%;
   /*width: calc(100% - 135px);*/
   width: 100%;

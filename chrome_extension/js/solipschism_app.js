@@ -68,15 +68,9 @@ class SolipschismApp extends HTMLElement {
     var this_solipschism_app = this;
     var shadow = this.shadowRoot;
 
-    var this_affected_area = $(shadow.querySelector("#container")).html(`
-      <H1>You dont need to login or signup</h1>
-      `)
+    var homepage = new SolipschismHomepage();
+    var this_affected_area = $(shadow.querySelector("#container")).html(homepage);
   }
-
-  login(){
-    
-  }
-
 
 }
 
