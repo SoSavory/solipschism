@@ -2,10 +2,13 @@ class User < ApplicationRecord
   has_secure_password
   has_secure_token
 
-  has_many :aliases
+  has_one :coordinate
+  has_many :matched_users
+  has_many :users, through: :matched_users, dependent: :destroy
+
+  has_many :articles
 
   validates :email, presence: true, uniqueness: true
-  after_create :create_alias
 
   def self.valid_login?(email, password)
     user = find_by(email: email)
@@ -25,18 +28,6 @@ class User < ApplicationRecord
 
   def self.with_unexpired_token(token, period)
     where(token: token).where('token_created_at >= ?', period).first
-  end
-
-  def current_alias
-    aliases.where(effective_date: Date.today).pluck(:id)[0]
-  end
-
-  def alias_on_date(day)
-    aliases.where(effective_date: day).pluck(:id)[0]
-  end
-
-  def create_alias
-    Alias.create(user_id: self.id, effective_date: Date.today)
   end
 
   private

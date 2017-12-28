@@ -1,7 +1,7 @@
-class MatchedAlias < ApplicationRecord
+class MatchedUser < ApplicationRecord
 
-  belongs_to :alias
-  belongs_to :matched_alias, class_name: "Alias"
+  belongs_to :user
+  belongs_to :matched_user, class_name: "User"
 
   after_create :create_inverse, unless: :has_inverse?
   after_destroy :destroy_inverses, if: :has_inverse?
@@ -23,7 +23,7 @@ class MatchedAlias < ApplicationRecord
   end
 
   def inverse_match_options
-    { matched_alias_id: alias_id, alias_id: matched_alias_id, effective_date: Date.today}
+    { matched_user_id: user_id, user_id: matched_user_id }
   end
 
 end

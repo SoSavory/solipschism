@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20171103211633) do
+ActiveRecord::Schema.define(version: 20171228165407) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -30,7 +30,7 @@ ActiveRecord::Schema.define(version: 20171103211633) do
   end
 
   create_table "articles", force: :cascade do |t|
-    t.integer  "alias_id",   null: false
+    t.integer  "user_id",    null: false
     t.string   "title",      null: false
     t.text     "body",       null: false
     t.datetime "created_at", null: false
@@ -48,10 +48,10 @@ ActiveRecord::Schema.define(version: 20171103211633) do
   create_table "coordinates", force: :cascade do |t|
     t.decimal  "latitude",   precision: 10, scale: 7
     t.decimal  "longitude",  precision: 10, scale: 7
-    t.integer  "alias_id"
+    t.integer  "user_id"
     t.datetime "created_at",                          null: false
     t.datetime "updated_at",                          null: false
-    t.index ["alias_id"], name: "index_coordinates_on_alias_id", unique: true, using: :btree
+    t.index ["user_id"], name: "index_coordinates_on_user_id", unique: true, using: :btree
   end
 
   create_table "matched_alias_archives", force: :cascade do |t|
@@ -62,13 +62,13 @@ ActiveRecord::Schema.define(version: 20171103211633) do
     t.datetime "updated_at",     null: false
   end
 
-  create_table "matched_aliases", force: :cascade do |t|
-    t.integer  "alias_id",         null: false
-    t.integer  "matched_alias_id", null: false
-    t.date     "effective_date",   null: false
-    t.datetime "created_at",       null: false
-    t.datetime "updated_at",       null: false
-    t.index ["alias_id", "matched_alias_id", "effective_date"], name: "alias_matched_alias_date_index", unique: true, using: :btree
+  create_table "matched_users", force: :cascade do |t|
+    t.integer  "user_id",         null: false
+    t.integer  "matched_user_id", null: false
+    t.date     "effective_date",  null: false
+    t.datetime "created_at",      null: false
+    t.datetime "updated_at",      null: false
+    t.index ["user_id", "matched_user_id", "effective_date"], name: "alias_matched_alias_date_index", unique: true, using: :btree
   end
 
   create_table "users", force: :cascade do |t|
@@ -85,5 +85,5 @@ ActiveRecord::Schema.define(version: 20171103211633) do
     t.index ["token", "token_created_at"], name: "index_users_on_token_and_token_created_at", using: :btree
   end
 
-  add_foreign_key "matched_aliases", "aliases", column: "matched_alias_id"
+  add_foreign_key "matched_users", "users", column: "matched_user_id"
 end

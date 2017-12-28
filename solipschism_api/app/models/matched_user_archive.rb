@@ -1,0 +1,2 @@
+class MatchedUserArchive < ApplicationRecord
+end

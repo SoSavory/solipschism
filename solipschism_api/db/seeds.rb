@@ -20,6 +20,6 @@ u3 = User.create(name: 'avery3', email: 'avery3@test.com', password: 'admin1234'
 # Article.create(alias_id: a2.id, title: "Title Test 2", body: "Body Test 2")
 # Article.create(alias_id: a3.id, title: "Title Test 3", body: "Body Test 3")
 
-# Coordinate.create(alias_id: a1.id, latitude: 0.6267474551, longitude: -1.38012586)
-# Coordinate.create(alias_id: a2.id, latitude: 0.6267486071, longitude: -1.380121741)
-# Coordinate.create(alias_id: a3.id, latitude: 0.6367486071, longitude: -1.380121741)
+Coordinate.create(user_id: u1.id, latitude: 0.6267474551, longitude: -1.38012586)
+Coordinate.create(user_id: u2.id, latitude: 0.6267486071, longitude: -1.380121741)
+Coordinate.create(user_id: u3.id, latitude: 0.6367486071, longitude: -1.380121741)

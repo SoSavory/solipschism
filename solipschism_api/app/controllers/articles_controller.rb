@@ -4,16 +4,17 @@ class ArticlesController < ApiController
 
   def index
     # we want articles whose alias belongs to the current user
-    articles = Article.joins(:alias).where(aliases: {user_id: current_user}).order("articles.created_at DESC").pluck(:id, :title, :body).map{ |a| {id: a[0], title: a[1], body: a[2] } }
+    articles = Article.where(user_id: current_user.id).order("articles.created_at DESC")
+    .pluck(:id, :title, :body, :created_at).map{ |a| {id: a[0], title: a[1], body: a[2], created_at: a[3] } }
     render json: {articles: articles}
   end
 
   def create
-    user_alias = current_user.current_alias
+
     title = params[:title]
     body = params[:body]
 
-    article = Article.new(alias_id: user_alias, title: title, body: body)
+    article = Article.new(user_id: current_user, title: title, body: body)
 
     if article.save
       message = { message: "Successfully Created an Article" }
@@ -27,18 +28,19 @@ class ArticlesController < ApiController
   end
 
   def show
-    article = Article.where(id: params[:id]).pluck(:id, :title, :body)[0]
+    article = Article.where(id: params[:id]).pluck(:id, :title, :body, :created_at).map{ |a| {id: a[0], title: a[1], body: a[2], created_at: a[3] } }
     render json: {article: article}, status: :ok
   end
 
   def show_matched_day
-    if params[:date].to_date <= Date.today
-      user_alias = current_user.alias_on_date(params[:date].to_date)
+    date = params[:date].to_date.to_time
+    if date <= Date.today
       # We want to grab all the articles belonging to all aliases that have a match with the users alias
       # matched_aliases = MatchedAlias.where(alias_id: user_alias).pluck(:matched_alias_id)
       # matched_articles = Article.where(alias_id: matched_aliases).pluck(:id, :title, :body)
-      matched_articles = Alias.includes(:articles, :matched_aliases)
-                              .references(:articles, :matched_aliases).where('matched_aliases.matched_alias_id = ?', user_alias)
+      matched_articles = User.includes(:articles, :matched_users)
+                              .references(:articles, :matched_users).where('matched_users.matched_user_id = ?', current_user)
+                              .where('matched_users.created_at > ? AND matched_users.created_at < ?', date.beginning_of_day, date.end_of_day)
                               .where('articles.id IS NOT NULL')
                               .pluck('articles.id, articles.title, articles.body')
 
@@ -53,6 +55,22 @@ class ArticlesController < ApiController
       status = :bad_request
     end
     render json: response, status: status
+  end
+
+  def show_today
+    date = Date.today
+
+    matched_articles = User.includes(:articles, :matched_users)
+                            .references(:articles, :matched_users)
+                            .where('matched_users.matched_user_id = ?', current_user)
+                            .where('matched_users.created_at > ? AND matched_users.created_at < ?', date.beginning_of_day, date.end_of_day)
+                            .where('articles.id IS NOT NULL')
+                            .pluck('articles.id, articles.title, articles.body')
+                            .map{ |a| {id: a[0], title: a[1], body: a[2], created_at: a[3] } }
+    response = {articles: matched_articles}
+    status = :ok
+    render json: response, status: status
+
   end
 
 

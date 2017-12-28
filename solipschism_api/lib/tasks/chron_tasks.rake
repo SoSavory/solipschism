@@ -1,7 +1,7 @@
 namespace :chron_tasks do
-  desc "Matches Aliases based on coordinates, to be used every 15ish minutes"
+  desc "Matches Users based on coordinates, to be used every 15ish minutes"
   # Currently the cost of this is 3N + 1 Queries + 2 Mass Inserts + (N^2 - N)/2 Trig comparisons
-  task match_aliases: :environment do
+  task match_users: :environment do
 
     today = Date.today
     now = Time.now
@@ -12,73 +12,57 @@ namespace :chron_tasks do
     puts "====================================================================="
 
 
-     aliases_plucked = Alias.joins(:user, :coordinate).where('users.opts_to_compute != TRUE')
+     users_plucked = User.joins(:coordinate).where('users.opts_to_compute != TRUE')
                             .where("coordinates.latitude != ? OR coordinates.longitude != ?", 0.0000000, 0.0000000)
-                            .where(effective_date: Date.today)
-                            .order("aliases.id")
-                            .pluck("aliases.id")
+                            .order("users.id")
+                            .pluck("users.id")
 
 
-     unless aliases_plucked.empty?
-       aliases_plucked.each do |alias_id|
+     unless users_plucked.empty?
+       users_plucked.each do |user_id|
 
         # puts "Alias ID: " + String(alias_id)
         # Exclude aliases where there is already a match, find a way to rewrite this query as a single join
-        already_matched_aliases = MatchedAlias.where(alias_id: alias_id).pluck(:matched_alias_id).push(alias_id)
+        already_matched_users = MatchedUser.where(user_id: user_id).pluck(:matched_user_id).push(user_id)
         # puts "Already Matched Aliases" + String(already_matched_aliases)
 
-        alias_coordinates = Coordinate.where(alias_id: alias_id).pluck(:latitude, :longitude)
+        user_coordinates = Coordinate.where(user_id: user_id).pluck(:latitude, :longitude)
         # puts "Alias Coordinates: " + String(alias_coordinates)
-        compare_aliases = Alias.where(effective_date: Date.today).where('aliases.id > ?', alias_id).includes(:coordinate)
+        compare_users = User.where('users.id > ?', user_id).includes(:coordinate)
                                .references(:coordinate)
-                               .where("aliases.id NOT IN (?)", already_matched_aliases)
-                               .pluck('aliases.id, coordinates.latitude, coordinates.longitude')
+                               .where("users.id NOT IN (?)", already_matched_users)
+                               .pluck('users.id, coordinates.latitude, coordinates.longitude')
         # puts "Compare Aliases " + String(compare_aliases)
 
-        matched_aliases = []
+        matched_users = []
 
-        compare_aliases.each do |cc|
-          distance = Coordinate.compare_coordinates(cc[1].to_f, alias_coordinates[0][0].to_f, cc[2].to_f, alias_coordinates[0][1].to_f)
+        compare_users.each do |cc|
+          distance = Coordinate.compare_coordinates(cc[1].to_f, user_coordinates[0][0].to_f, cc[2].to_f, user_coordinates[0][1].to_f)
           # puts alias_id
           # puts cc[0]
           # puts distance
-          if distance <= 100
-            matched_aliases.push(cc[0])
+          if distance <= 1000000
+            matched_users.push(cc[0])
           end
         end
-        unless matched_aliases.empty?
-          matches = matched_aliases.map{|m| "( #{alias_id}, #{m}, '#{today}', '#{now}', '#{now}' )"}.join(",")
+        unless matched_users.empty?
+          matches = matched_users.map{|m| "( #{user_id}, #{m}, '#{today}', '#{now}', '#{now}' )"}.join(",")
           # puts "Matches: "
           # puts matches
           overall_matches_array.push(matches)
+          overall_matches = overall_matches_array.join(",")
+          # puts "Overall Matches: "
+          # puts overall_matches
+          sql_matched_users = "INSERT INTO matched_users (user_id, matched_user_id, effective_date, created_at, updated_at) VALUES #{overall_matches}"
+          sql_reverse_matched_users = "INSERT INTO matched_users (matched_user_id, user_id, effective_date, created_at, updated_at) VALUES #{overall_matches}"
+          ActiveRecord::Base.connection.execute(sql_matched_users)
+          ActiveRecord::Base.connection.execute(sql_reverse_matched_users)
         end
       end
     # Here is where we would archiv the existing coordinates, if that is something we wanted to do
-      overall_matches = overall_matches_array.join(",")
-      # puts "Overall Matches: "
-      # puts overall_matches
-      sql_matched_aliases = "INSERT INTO matched_aliases (alias_id, matched_alias_id, effective_date, created_at, updated_at) VALUES #{overall_matches}"
-      sql_reverse_matched_aliases = "INSERT INTO matched_aliases (matched_alias_id, alias_id, effective_date, created_at, updated_at) VALUES #{overall_matches}"
-      ActiveRecord::Base.connection.execute(sql_matched_aliases)
-      ActiveRecord::Base.connection.execute(sql_reverse_matched_aliases)
     end
   end
 
-  desc "Creates a fresh set of aliases and coordinates for users, to be used daily"
-  task create_aliases: :environment do
-    puts "Running Task"
-    date = Date.today
-    time = Time.now
-    user_ids = User.pluck(:id)
-    existing_users = user_ids.map{ |id| "('#{id}', '#{date}', '#{time}', '#{time}')" }.join(",")
 
-    sql_aliases = "INSERT INTO aliases (user_id, effective_date, created_at, updated_at) VALUES #{existing_users}"
-    ActiveRecord::Base.connection.execute(sql_aliases)
-
-    existing_aliases = Alias.where(effective_date: date).pluck(:id)
-    coordinates = existing_aliases.map{ |id| "('#{id}', '0', '0', '#{time}', '#{time}')" }.join(",")
-    sql_coordinates = "INSERT INTO coordinates (alias_id, latitude, longitude, created_at, updated_at) VALUES #{coordinates}"
-    ActiveRecord::Base.connection.execute(sql_coordinates)
-  end
 
 end

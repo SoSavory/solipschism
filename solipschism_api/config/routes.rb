@@ -11,8 +11,8 @@ Rails.application.routes.draw do
 
   get 'coordinates/index'
   post 'coordinates/update'
-  get 'coordinates/require_computation_set'
-  post 'coordinates/upload_matched_aliases'
+  # get 'coordinates/require_computation_set'
+  # post 'coordinates/upload_matched_aliases'
 
 
   scope :format => true, :constraints => { :format => 'json' } do
