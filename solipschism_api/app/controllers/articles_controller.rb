@@ -14,7 +14,7 @@ class ArticlesController < ApiController
     title = params[:title]
     body = params[:body]
 
-    article = Article.new(user_id: current_user, title: title, body: body)
+    article = Article.new(user_id: current_user.id, title: title, body: body)
 
     if article.save
       message = { message: "Successfully Created an Article" }
@@ -39,7 +39,7 @@ class ArticlesController < ApiController
       # matched_aliases = MatchedAlias.where(alias_id: user_alias).pluck(:matched_alias_id)
       # matched_articles = Article.where(alias_id: matched_aliases).pluck(:id, :title, :body)
       matched_articles = User.includes(:articles, :matched_users)
-                              .references(:articles, :matched_users).where('matched_users.matched_user_id = ?', current_user)
+                              .references(:articles, :matched_users).where('matched_users.matched_user_id = ?', current_user.id)
                               .where('matched_users.created_at > ? AND matched_users.created_at < ?', date.beginning_of_day, date.end_of_day)
                               .where('articles.id IS NOT NULL')
                               .pluck('articles.id, articles.title, articles.body')
@@ -62,7 +62,7 @@ class ArticlesController < ApiController
 
     matched_articles = User.includes(:articles, :matched_users)
                             .references(:articles, :matched_users)
-                            .where('matched_users.matched_user_id = ?', current_user)
+                            .where('matched_users.matched_user_id = ?', current_user.id)
                             .where('matched_users.created_at > ? AND matched_users.created_at < ?', date.beginning_of_day, date.end_of_day)
                             .where('articles.id IS NOT NULL')
                             .pluck('articles.id, articles.title, articles.body')
