@@ -8,6 +8,8 @@
 u1 = User.create(name: 'avery', email: 'avery@test.com', password: 'admin1234')
 u2 = User.create(name: 'avery2', email: 'avery2@test.com', password: 'admin1234')
 u3 = User.create(name: 'avery3', email: 'avery3@test.com', password: 'admin1234')
+u4 = User.create(name: 'avery4', email: 'avery4@test.com', password: 'admin1234')
+u5 = User.create(name: 'avery5', email: 'avery5@test.com', password: 'admin1234')
 
 # a1 = Alias.create(user_id: u1.id, effective_date: Date.today)
 # a2 = Alias.create(user_id: u2.id, effective_date: Date.today)
@@ -23,3 +25,8 @@ u3 = User.create(name: 'avery3', email: 'avery3@test.com', password: 'admin1234'
 Coordinate.create(user_id: u1.id, latitude: 0.6267474551, longitude: -1.38012586)
 Coordinate.create(user_id: u2.id, latitude: 0.6267486071, longitude: -1.380121741)
 Coordinate.create(user_id: u3.id, latitude: 0.6367486071, longitude: -1.380121741)
+Coordinate.create(user_id: u4.id, latitude: 0.6267474551, longitude: -1.38012586)
+Coordinate.create(user_id: u5.id, latitude: 0.6267486071, longitude: -1.380121741)
+
+# MatchedUser.create(user_id: u1.id, matched_user_id: u2.id)
+# MatchedUser.create(user_id: u1.id, matched_user_id: u3.id)
