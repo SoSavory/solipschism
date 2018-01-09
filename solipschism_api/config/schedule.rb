@@ -27,14 +27,7 @@ set :output, { :error => "log/cron_error.log"}
 env :PATH, ENV['PATH']
 env :GEM_PATH, ENV['GEM_PATH']
 
-every 1.day, :at => '00:00' do
-  rake "chron_tasks:create_aliases", environment: :production
-end
-
-every 5.minutes do
-  rake "chron_tasks:match_aliases", environment: :production
-end
-
 every 1.minutes do
-  command "env > /tmp/env.output"
+  rake "chron_tasks:match_users", environment: :production
 end
+
