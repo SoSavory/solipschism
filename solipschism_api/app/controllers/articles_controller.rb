@@ -39,7 +39,8 @@ class ArticlesController < ApiController
       # matched_aliases = MatchedAlias.where(alias_id: user_alias).pluck(:matched_alias_id)
       # matched_articles = Article.where(alias_id: matched_aliases).pluck(:id, :title, :body)
       matched_articles = User.includes(:articles, :matched_users)
-                              .references(:articles, :matched_users).where('matched_users.matched_user_id = ?', current_user)
+                              .references(:articles, :matched_users).where('matched_users.matched_user_id = ?', current_user.id)
+                              .where('matched_users.created_at > ? AND matched_users.created_at < date.end_of_day', date.beginning_of_day, date.end_of_day)
                               .where('articles.id IS NOT NULL')
                               .pluck('articles.id, articles.title, articles.body')
 
@@ -61,7 +62,8 @@ class ArticlesController < ApiController
 
     matched_articles = User.includes(:articles, :matched_users)
                             .references(:articles, :matched_users)
-                            .where('matched_users.matched_user_id = ?', current_user)
+                            .where('matched_users.matched_user_id = ?', current_user.id)
+                            .where('matched_users.created_at > ?',date - 2.days)
                             .where('articles.id IS NOT NULL')
                             .pluck('articles.id, articles.title, articles.body')
                             .map{ |a| {id: a[0], title: a[1], body: a[2], created_at: a[3] } }
