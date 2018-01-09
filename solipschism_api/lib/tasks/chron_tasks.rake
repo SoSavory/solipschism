@@ -67,9 +67,9 @@ namespace :chron_tasks do
         # For the updates, there is no super efficient way to do them all in bulk, so we do them user by user
         unless matches_to_update.empty?
           # matches = matches_to_update.join(",")
-          matches = matches_to_update
+
           MatchedUser.where(user_id: user_id).where("matched_users.matched_user_id IN (?)", matches).update_all(updated_at: now)
-          MatchedUser.where("matched_users.user_id IN (?)", matches).where(matched_user_id: user_id).update_all(updated_at: now)
+          MatchedUser.where("matched_users.user_id IN (?)", matches_to_update).where(matched_user_id: user_id).update_all(updated_at: now)
         end
       end
       # Think about consolidating all the INSERT statements into a single statement, and have a loop that zips through index_of_matched_users and users_plucked, matching the indices of both
