@@ -2,7 +2,7 @@
 
 namespace :chron_tasks do
   desc "Matches Users based on coordinates, to be used every 15ish minutes"
-  # Currently the cost of this is 3N + 1 Queries + 2 Mass Inserts + (N^2 - N)/2 Trig comparisons
+  # Currently the cost of this is 2N + 1 Queries + 2 Mass Inserts + (N^2 - N)/2 Trig comparisons
   task match_users: :environment do
 
     today = Date.today
@@ -66,7 +66,6 @@ namespace :chron_tasks do
 
         # For the updates, there is no super efficient way to do them all in bulk, so we do them user by user
         unless matches_to_update.empty?
-          # matches = matches_to_update.join(",")
 
           MatchedUser.where(user_id: user_id).where("matched_users.matched_user_id IN (?)", matches).update_all(updated_at: now)
           MatchedUser.where("matched_users.user_id IN (?)", matches_to_update).where(matched_user_id: user_id).update_all(updated_at: now)
