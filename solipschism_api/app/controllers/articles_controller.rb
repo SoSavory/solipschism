@@ -40,7 +40,7 @@ class ArticlesController < ApiController
       # matched_articles = Article.where(alias_id: matched_aliases).pluck(:id, :title, :body)
       matched_articles = User.includes(:articles, :matched_users)
                               .references(:articles, :matched_users).where('matched_users.matched_user_id = ?', current_user.id)
-                              .where('matched_users.created_at > ? AND matched_users.created_at < date.end_of_day', date.beginning_of_day, date.end_of_day)
+                              .where('matched_users.created_at > ? AND matched_users.created_at < ?', date.beginning_of_day, date.end_of_day)
                               .where('articles.id IS NOT NULL')
                               .pluck('articles.id, articles.title, articles.body')
 
